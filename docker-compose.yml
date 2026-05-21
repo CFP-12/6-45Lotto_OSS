@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=lottodb
+      - POSTGRES_USER=lotto_admin
+      - POSTGRES_PASSWORD=lottopassword
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=lottodb
+      - DB_USER=lotto_admin
+      - DB_PASSWORD=lottopassword
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
