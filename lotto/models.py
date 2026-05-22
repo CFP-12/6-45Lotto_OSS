@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-class LotooRound(models.Model):
+class LottoRound(models.Model):
     round_number = models.PositiveIntegerField(unique=True, verbose_name="회차")
     draw_date = models.DateTimeField(auto_now_add=True, verbose_name="추첨 날짜")
 
@@ -18,6 +18,22 @@ class LotooRound(models.Model):
     def __str__(self):
         return f"제 {self.round_number}회 로또 추첨"
     
+    def settle_tickets(self):
+        if not self.is_drawn:
+            return  # 추첨이 완료되지 않은 경우 처리하지 않음
+
+        from .utils import check_lotto_rank
+
+        winning_numbers = {self.num1, self.num2, self.num3, self.num4, self.num5, self.num6}
+        bonus_number = self.bonus_num
+        tickets = self.tickets.all()
+
+        for ticket in tickets:
+            ticket_nums = ticket.get_numbers()
+            rank = check_lotto_rank(ticket_nums, winning_numbers, bonus_number)
+            ticket.rank = rank
+            ticket.save()
+    
 
 class Ticket(models.Model):
     SELECTION_CHOICES = [
@@ -26,7 +42,7 @@ class Ticket(models.Model):
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tickets", verbose_name="구매자")
-    round_instance = models.ForeignKey(LotooRound, on_delete=models.CASCADE, related_name="tickets", verbose_name="회차")
+    round_instance = models.ForeignKey(LottoRound, on_delete=models.CASCADE, related_name="tickets", verbose_name="회차")
 
     selection_type = models.CharField(max_length=6, choices=SELECTION_CHOICES, verbose_name="선택 유형")
     purchased_at = models.DateTimeField(auto_now_add=True, verbose_name="구매 날짜")

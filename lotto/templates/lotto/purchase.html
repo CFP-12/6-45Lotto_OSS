@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>6/45 로또 구매 페이지</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .inputs-manual { display: flex; gap: 5px; margin-top: 10px; }
+        .inputs-manual input { width: 45px; height: 35px; text-align: center; font-size: 16px; }
+        .btn { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; font-size: 16px; cursor: pointer; border-radius: 5px; }
+        .messages { color: blue; font-weight: bold; margin-bottom: 15px; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🎫 로또 복권 구매</h2>
+    
+    {% if current_round %}
+        <p><strong>현재 진행 회차:</strong> 제 {{ current_round.round_number }}회</p>
+    {% endif %}
+
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label><input type="radio" name="selection_type" value="AUTO" checked onclick="toggleInput(false)"> 🤖 자동 발급</label>
+            <label style="margin-left: 20px;"><input type="radio" name="selection_type" value="MANUAL" onclick="toggleInput(true)"> ✍️ 수동 마킹</label>
+        </div>
+
+        <div class="form-group" id="manual-section" style="display: none;">
+            <p>1부터 45 사이의 숫자 6개를 중복 없이 입력하세요:</p>
+            <div class="inputs-manual">
+                <input type="number" name="num1" min="1" max="45">
+                <input type="number" name="num2" min="1" max="45">
+                <input type="number" name="num3" min="1" max="45">
+                <input type="number" name="num4" min="1" max="45">
+                <input type="number" name="num5" min="1" max="45">
+                <input type="number" name="num6" min="1" max="45">
+            </div>
+        </div>
+
+        <button type="submit" class="btn">복권 구매하기</button>
+    </form>
+</div>
+
+<script>
+    // 라디오 버튼 선택에 따라 수동 입력창을 숨기거나 보여주는 자바스크립트
+    function toggleInput(isManual) {
+        const section = document.getElementById('manual-section');
+        const inputs = section.getElementsByTagName('input');
+        
+        if (isManual) {
+            section.style.display = 'block';
+            for(let input of inputs) { input.required = true; }
+        } else {
+            section.style.display = 'none';
+            for(let input of inputs) { input.required = false; input.value = ''; }
+        }
+    }
+</script>
+
+</body>
+</html>
