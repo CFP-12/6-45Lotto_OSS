@@ -24,12 +24,21 @@ class LottoRound(models.Model):
 
         from .utils import check_lotto_rank
 
-        winning_numbers = {self.num1, self.num2, self.num3, self.num4, self.num5, self.num6}
+
+
+        winning_numbers = [
+            int(self.num1),
+            int(self.num2),
+            int(self.num3),
+            int(self.num4),
+            int(self.num5),
+            int(self.num6)
+        ]
         bonus_number = self.bonus_num
         tickets = self.tickets.all()
 
         for ticket in tickets:
-            ticket_nums = ticket.get_numbers()
+            ticket_nums = [int(n) for n in ticket.get_numbers()]
             rank = check_lotto_rank(ticket_nums, winning_numbers, bonus_number)
             ticket.rank = rank
             ticket.save()

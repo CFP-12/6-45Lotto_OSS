@@ -60,3 +60,13 @@ def purchase_ticket(request):
         return redirect('purchase_ticket')
     
     return render(request, 'lotto/purchase.html', {'current_round': current_round})
+
+@login_required
+def check_results(request):
+    user_tickets = Ticket.objects.filter(user=request.user).select_related('round_instance').order_by('-purchased_at')
+
+    context  = {
+        'tickets': user_tickets,
+    }
+    return render(request, 'lotto/results.html', context)
+        

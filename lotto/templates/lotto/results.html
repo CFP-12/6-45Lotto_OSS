@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>6/45 로또 당첨 확인</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f8f9fa; }
+        .container { max-width: 800px; margin: auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #ddd; }
+        th { background-color: #007bff; color: white; }
+        .ball { display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; text-align: center; background-color: #e0e0e0; font-weight: bold; font-size: 14px; margin: 0 2px; }
+        /* 등수별 배지 스타일 */
+        .badge { padding: 5px 10px; border-radius: 20px; font-weight: bold; font-size: 14px; }
+        .rank-1 { background-color: #ffd700; color: #333; } /* 1등 금색 */
+        .rank-2 { background-color: #c0c0c0; color: #333; } /* 2등 은색 */
+        .rank-3 { background-color: #cd7f32; color: white; } /* 3등 동색 */
+        .rank-4 { background-color: #007bff; color: white; }
+        .rank-5 { background-color: #6c757d; color: white; }
+        .rank-none { background-color: #dc3545; color: white; } /* 낙첨 */
+        .rank-waiting { background-color: #ffc107; color: #333; } /* 추첨 대기 */
+        .nav-links { display: flex; justify-content: space-between; margin-top: 20px; }
+        .btn-link { text-decoration: none; color: #007bff; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>내 로또 복권 당첨 내역 확인</h2>
+    
+    <div class="nav-links">
+        <a href="{% url 'purchase_ticket' %}" class="btn-link">← 복권 구매하러 가기</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>구매 일시</th>
+                <th>회차</th>
+                <th>구분</th>
+                <th>선택한 번호 6개</th>
+                <th>당첨 결과</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket.purchased_at|date:"Y-m-d H:i" }}</td>
+                <td>제 {{ ticket.round_instance.round_number }}회</td>
+                <td>
+                    <small>{{ ticket.get_selection_type_display }}</small>
+                </td>
+                <td>
+                    <span class="ball">{{ ticket.num1 }}</span>
+                    <span class="ball">{{ ticket.num2 }}</span>
+                    <span class="ball">{{ ticket.num3 }}</span>
+                    <span class="ball">{{ ticket.num4 }}</span>
+                    <span class="ball">{{ ticket.num5 }}</span>
+                    <span class="ball">{{ ticket.num6 }}</span>
+                </td>
+                <td>
+                    {% if ticket.round_instance.is_drawn %}
+                        {% if ticket.rank %}
+                            <span class="badge rank-{{ ticket.rank }}">{{ ticket.rank }}등 🎉</span>
+                        {% else %}
+                            <span class="badge rank-none">아쉬운 낙첨 😢</span>
+                        {% endif %}
+                    {% else %}
+                        <span class="badge rank-waiting">추첨 대기중 ⏳</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="color: #666; padding: 40px 0;">아직 구매한 로또 복권 내역이 없습니다.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

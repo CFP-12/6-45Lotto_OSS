@@ -12,6 +12,10 @@
         .btn { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; font-size: 16px; cursor: pointer; border-radius: 5px; }
         .messages { color: blue; font-weight: bold; margin-bottom: 15px; }
         .error { color: red; }
+        .btn-secondary { display: block; text-align: center; text-decoration: none; margin-top: 10px; padding: 10px; background-color: #007bff; /* 파란색 버튼 */ color: white; font-size: 16px; border-radius: 5px; font-weight: bold;}
+        .btn-secondary:hover { background-color: #0056b3; }
+        .top-link-container { text-align: right; margin-bottom: 15px; }
+        .top-link { text-decoration: none; color: #007bff; font-weight: bold; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -32,9 +36,7 @@
     {% endif %}
 
     <form method="POST">
-        {% csrf_token %}
-        
-        <div class="form-group">
+        {% csrf_token %} <div class="form-group">
             <label><input type="radio" name="selection_type" value="AUTO" checked onclick="toggleInput(false)"> 🤖 자동 발급</label>
             <label style="margin-left: 20px;"><input type="radio" name="selection_type" value="MANUAL" onclick="toggleInput(true)"> ✍️ 수동 마킹</label>
         </div>
@@ -52,6 +54,8 @@
         </div>
 
         <button type="submit" class="btn">복권 구매하기</button>
+        
+        <a href="{% url 'check_results' %}" class="btn-secondary">🎉 전체 당첨 결과 확인하러 가기</a>
     </form>
 </div>
 
